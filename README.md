@@ -12,6 +12,5 @@ add text to markers, waiting for version upgrade: https://github.com/androidseb/
 
 use either one for caching
 
-[flutter_map_tile_caching](https://fmtc.jaffaketchup.dev/)
-
-[vector_map_tiles](https://github.com/greensopinion/flutter-vector-map-tiles)
+- [X] [flutter_map_tile_caching](https://fmtc.jaffaketchup.dev/)
+- [ ] [vector_map_tiles](https://github.com/greensopinion/flutter-vector-map-tiles)
