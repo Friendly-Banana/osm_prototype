@@ -25,63 +25,6 @@ class _MapScreenState extends State<MapScreen> {
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   StoreDirectory cache = FMTC.instance("storeName");
 
-  Future<void> download() async {
-    final region = CircleRegion(
-      LatLng(48.126154762110744, 11.579897939780327), // Munich
-      10, // Radius in km
-    );
-    final downloadable = region.toDownloadable(
-        1,
-        19,
-        parallelThreads: 2,
-        TileLayer(
-          urlTemplate: urlTemplate,
-          subdomains: const ['a', 'b', 'c'],
-          maxZoom: 19,
-        ),
-        preventRedownload: true,
-        errorHandler: (object) => {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text("Downloading failed: $object"),
-                duration: const Duration(seconds: 5),
-              ))
-            });
-    showDialog(
-        context: context,
-        builder: (BuildContext ctx) {
-          return AlertDialog(
-            title: const Text('Please Confirm'),
-            content: Text(
-                'This will download ${cache.download.check(downloadable)} tiles. Are you sure?'),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-
-                    cache.download
-                        .startForeground(region: downloadable)
-                        .listen((event) {
-                      Stack(
-                        children: [
-                          LinearProgressIndicator(
-                              value: event.percentageProgress),
-                          Text(
-                              "${event.successfulTiles}/${event.maxTiles} - ${event.remainingTiles} tiles remaining")
-                        ],
-                      );
-                    });
-                  },
-                  child: const Text('Yes')),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('No'))
-            ],
-          );
-        });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -137,18 +80,9 @@ class _MapScreenState extends State<MapScreen> {
             urlTemplate: urlTemplate,
             subdomains: const ['a', 'b', 'c'],
             maxZoom: 19,
-            tileProvider: cache.getTileProvider(FMTCTileProviderSettings(
-              cachedValidDuration:
-                  cache.metadata.read.containsKey('validDuration')
-                      ? Duration(
-                          days: int.parse(
-                            cache.metadata.read['validDuration']!,
-                          ),
-                        )
-                      : const Duration(days: 7),
-            )),
+            tileProvider: cache.getTileProvider(),
             userAgentPackageName: 'dev.banana.osm_prototype',
-            keepBuffer: 5,
+            keepBuffer: 3,
           ),
           MarkerClusterLayerWidget(
               options: MarkerClusterLayerOptions(
